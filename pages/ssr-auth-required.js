@@ -4,7 +4,8 @@ import {
   withAuthUser,
   withAuthUserTokenSSR,
   AuthAction,
-} from 'next-firebase-auth'
+} from 'next-firebase-auth';
+import Link from '../src/Link';
 import getAbsoluteURL from '../utils/getAbsoluteURL'
 
 const styles = {
@@ -30,6 +31,9 @@ const Demo = ({ favoriteColor }) => {
           <p>Your favorite color is: {favoriteColor}</p>
         </div>
       </div>
+      <Link href="/static-auth-required-loader" color="secondary">
+          Go to the csr page
+        </Link>
     </div>
   )
 }
