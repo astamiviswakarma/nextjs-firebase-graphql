@@ -5,7 +5,9 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import 'tailwindcss/tailwind.css';
 import theme from '../src/theme';
+import initAuth from '../utils/initAuth';
 
+initAuth();
 export default function MyApp(props) {
   const { Component, pageProps } = props;
 
