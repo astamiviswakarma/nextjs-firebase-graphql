@@ -2,16 +2,7 @@ import { useQuery, gql } from "@apollo/client";
 import { withAuthUser, AuthAction, useAuthUser } from 'next-firebase-auth';
 import FullPageLoader from '../src/FullPageLoader';
 import { useApollo } from "../utils/withApollo";
-
-const QUERY = gql`
-  query Countries {
-    countries {
-      code
-      name
-      emoji
-    }
-  }
-`;
+import QUERY from "../graphql/countries.graphql";
 
 const Demo = (props) => {
   const AuthUser = useAuthUser();
