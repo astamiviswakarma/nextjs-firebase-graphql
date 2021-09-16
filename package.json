@@ -3,17 +3,20 @@
   "version": "4.0.0",
   "private": true,
   "dependencies": {
+    "@apollo/client": "^3.4.11",
     "@material-ui/core": "latest",
-    "clsx": "latest",
     "firebase": "^8.9.1",
     "firebase-admin": "^9.11.1",
+    "graphql": "^15.5.3",
+    "isomorphic-unfetch": "^3.1.0",
+    "isomorphic-ws": "^4.0.1",
     "next": "latest",
     "next-absolute-url": "^1.2.2",
     "next-firebase-auth": "^0.13.3",
-    "prop-types": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "react-firebaseui": "^5.0.2"
+    "react-firebaseui": "^5.0.2",
+    "subscriptions-transport-ws": "^0.9.19"
   },
   "scripts": {
     "dev": "next",
