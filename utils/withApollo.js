@@ -1,4 +1,4 @@
-import { ApolloClient, HttpLink, split } from "@apollo/client";
+import { ApolloClient, HttpLink, split, from } from "@apollo/client";
 import { InMemoryCache } from "@apollo/client/cache";
 import { WebSocketLink } from "@apollo/client/link/ws";
 import { getMainDefinition } from "@apollo/client/utilities";
@@ -8,6 +8,8 @@ import React from "react";
 import { SubscriptionClient } from "subscriptions-transport-ws";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
+import merge from 'deepmerge'
+import isEqual from 'lodash/isEqual'
 
 const createHttpLink = (authUser) => {
     const getHttpUri = () => {
@@ -18,6 +20,10 @@ const createHttpLink = (authUser) => {
             ? process.env.NEXT_PUBLIC_CSR_API_URL
             : process.env.NEXT_PUBLIC_SSR_API_URL;
     };
+
+    const logoutLink = onError(({ networkError }) => {
+        if (networkError.statusCode === 401) console.log("401 Unauthorized"); //logout();
+    });
 
     const authLink = setContext(async (_, { headers }) => {
         const token = await authUser.getIdToken()
@@ -37,7 +43,7 @@ const createHttpLink = (authUser) => {
         fetch,
     });
 
-    return authLink.concat(httpLink);
+    return from([logoutLink, authLink, httpLink]);
 };
 
 const createWSLink = (authUser) => {
@@ -53,7 +59,7 @@ const createWSLink = (authUser) => {
     }, ws));
 };
 
-let apolloClient;
+let apolloClient, authUser;
 export const createApolloClient = (authUser) => {
     const ssrMode = typeof window === "undefined";
     const link = !ssrMode
@@ -67,17 +73,38 @@ export const createApolloClient = (authUser) => {
     return new ApolloClient({ ssrMode, link, cache: new InMemoryCache() });
 };
 
-export const initializeApollo = (initialState = {}, authUser) => {
-    const _apolloClient = apolloClient !== null && apolloClient !== void 0 ? apolloClient : createApolloClient(authUser);
+export const initializeApollo = (initialState = {}, user) => {
+    const doNotUpdate = apolloClient !== null && apolloClient !== void 0 && isEqual(authUser, user);
+
+    const _apolloClient = doNotUpdate ? apolloClient : createApolloClient(user);
+
+    // If your page has Next.js data fetching methods that use Apollo Client, the initial state
+    // gets hydrated here
     if (initialState) {
-        const existingCache = _apolloClient.extract();
-        _apolloClient.cache.restore(Object.assign(Object.assign({}, existingCache), initialState));
+        // Get existing cache, loaded during client side data fetching
+        const existingCache = _apolloClient.extract()
+
+        // Merge the existing cache into data passed from getStaticProps/getServerSideProps
+        const data = merge(initialState, existingCache, {
+        // combine arrays using object equality (like in sets)
+        arrayMerge: (destinationArray, sourceArray) => [
+            ...sourceArray,
+            ...destinationArray.filter((d) =>
+            sourceArray.every((s) => !isEqual(d, s))
+            ),
+        ],
+        })
+
+        // Restore the cache with the merged data
+        _apolloClient.cache.restore(data)
     }
+
     if (typeof window === "undefined") {
         return _apolloClient;
     }
-    if (!apolloClient) {
+    if (!doNotUpdate) {
         apolloClient = _apolloClient;
+        authUser = user;
     }
     return _apolloClient;
 };

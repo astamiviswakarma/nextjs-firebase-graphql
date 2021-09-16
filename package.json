@@ -5,6 +5,7 @@
   "dependencies": {
     "@apollo/client": "^3.4.11",
     "@material-ui/core": "latest",
+    "deepmerge": "^4.2.2",
     "firebase": "^8.9.1",
     "firebase-admin": "^9.11.1",
     "graphql": "^15.5.3",
@@ -16,7 +17,8 @@
     "react": "latest",
     "react-dom": "latest",
     "react-firebaseui": "^5.0.2",
-    "subscriptions-transport-ws": "^0.9.19"
+    "subscriptions-transport-ws": "^0.9.19",
+    "ws": "^8.2.2"
   },
   "scripts": {
     "dev": "next",

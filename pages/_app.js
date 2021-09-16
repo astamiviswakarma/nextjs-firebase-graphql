@@ -6,17 +6,10 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import 'tailwindcss/tailwind.css';
 import theme from '../src/theme';
 import initAuth from '../utils/initAuth';
-import { useApollo } from '../utils/withApollo';
-import { ApolloProvider } from '@apollo/client'
-import {
-  useAuthUser
-} from 'next-firebase-auth';
 
 initAuth();
 export default function MyApp(props) {
-  const AuthUser = useAuthUser();
   const { Component, pageProps } = props;
-  const apolloClient = useApollo(pageProps, AuthUser);
 
   React.useEffect(() => {
     // Remove the server-side injected CSS.
@@ -35,9 +28,7 @@ export default function MyApp(props) {
       <ThemeProvider theme={theme}>
         {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
         <CssBaseline />
-        <ApolloProvider client={apolloClient}>
           <Component {...pageProps} />
-        </ApolloProvider>
       </ThemeProvider>
     </React.Fragment>
   );
